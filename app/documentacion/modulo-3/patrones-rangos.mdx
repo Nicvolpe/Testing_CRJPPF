@@ -1,0 +1,131 @@
+---
+title: "Patrones, Rangos y Conjuntos"
+description: "Filtrado con LIKE y comodines, rangos con BETWEEN y selección de conjuntos con IN"
+icon: "filter"
+---
+
+## Patrones de filtrado de texto con LIKE
+
+El operador `LIKE` permite buscar registros que coincidan con un **patrón de texto**.
+
+### Comodines disponibles
+
+| Comodín | Significado | Ejemplo |
+|---------|-------------|---------|
+| `%` | Cualquier cantidad de caracteres | `'F%'` → empieza con F |
+| `_` | Exactamente un carácter | `'_a%'` → segundo carácter es "a" |
+| `[abc]` | Cualquiera de los caracteres listados | `'[ik]%'` → empieza con i o k |
+
+### Ejemplos prácticos
+
+#### Empieza con una letra
+
+```sql
+SELECT * FROM Customers
+WHERE CustomerName LIKE 'F%';
+```
+
+Todos los clientes cuyo nombre empieza con "F".
+
+#### Contiene un texto
+
+```sql
+SELECT * FROM Customers
+WHERE CustomerName LIKE '%F%';
+```
+
+Todos los clientes cuyo nombre contiene "F" en cualquier posición.
+
+<Note>
+En el emulador W3Schools, `LIKE` no es case sensitive. En motores de bases de datos reales, esto puede variar según la **collation** configurada.
+</Note>
+
+#### Segundo carácter específico
+
+```sql
+SELECT * FROM Customers
+WHERE CustomerName LIKE '_a%';
+```
+
+Todos los que tengan "a" como segundo carácter.
+
+#### Empieza con una de varias letras
+
+```sql
+SELECT * FROM Customers
+WHERE CustomerName LIKE '[ik]%';
+```
+
+Todos los que empiecen por "i" o por "k".
+
+## Filtrado por intervalo con BETWEEN
+
+`BETWEEN` filtra registros dentro de un **rango de valores** (incluidos los extremos).
+
+### Comparación de sintaxis
+
+<Tabs>
+  <Tab title="Con operadores">
+```sql
+SELECT * FROM Products
+WHERE Price >= 15 AND Price <= 20;
+```
+  </Tab>
+  <Tab title="Con BETWEEN">
+```sql
+SELECT * FROM Products
+WHERE Price BETWEEN 15 AND 20;
+```
+  </Tab>
+</Tabs>
+
+Ambos traen productos con precio entre 15 y 20 (incluidos), pero `BETWEEN` resulta **más legible**.
+
+### BETWEEN con texto
+
+También funciona con cadenas de texto (orden alfabético):
+
+```sql
+SELECT * FROM Products
+WHERE ProductName BETWEEN 'Ikura' AND 'Konbu'
+ORDER BY ProductName;
+```
+
+Todos los productos ordenados alfabéticamente entre "Ikura" y "Konbu" (incluidos).
+
+## Filtrado por conjunto con IN
+
+`IN` permite filtrar por una **lista de valores específicos**.
+
+### Comparación de sintaxis
+
+<Tabs>
+  <Tab title="Con OR">
+```sql
+SELECT * FROM Customers
+WHERE Country = 'UK'
+   OR Country = 'Spain'
+   OR Country = 'Austria';
+```
+  </Tab>
+  <Tab title="Con IN">
+```sql
+SELECT * FROM Customers
+WHERE Country IN ('UK', 'Spain', 'Austria');
+```
+  </Tab>
+</Tabs>
+
+Ambos dan el mismo resultado, pero `IN` es **más legible y más corto**.
+
+## Resumen comparativo
+
+| Método | Cuándo usar | Ejemplo |
+|--------|------------|---------|
+| `LIKE` | Buscar por **patrón de texto** | Nombres que empiezan con "A" |
+| `BETWEEN` | Filtrar por **rango numérico o textual** | Precios entre 10 y 50 |
+| `IN` | Filtrar por **lista de valores exactos** | Países específicos |
+
+<Tip>
+Estos filtros se pueden combinar con `AND`, `OR` y `NOT` para crear condiciones más complejas. Consultá [ORDER BY, GROUP BY y CASE](/app/documentacion/modulo-3/ordenamiento-agrupacion) para aprender a ordenar y agrupar los resultados.
+</Tip>

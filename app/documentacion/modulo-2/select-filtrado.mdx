@@ -1,0 +1,142 @@
+---
+title: "SELECT y Filtrado de Datos"
+description: "Comando SELECT, filtrado con WHERE, operadores de comparación, condiciones compuestas con AND/OR/NOT, LIMIT, DISTINCT y COUNT"
+icon: "magnifying-glass"
+---
+
+## Generalidades de SQL
+
+Antes de empezar con los comandos, algunas reglas importantes:
+
+| Regla | Detalle |
+|-------|---------|
+| **Case sensitivity** | SQL **no** es case sensitive, ni en comandos ni en nombres de campos |
+| **Punto y coma** | Cuando hay varias instrucciones SQL, se terminan con `;` |
+| **Comentarios de línea** | Empiezan con `--` (dos guiones) |
+| **Comentarios multilínea** | Empiezan con `/*` y cierran con `*/` |
+
+### Ejemplo de comentarios
+
+```sql
+/* SELECT * FROM Customers;
+SELECT * FROM Products;
+SELECT * FROM Orders;
+SELECT * FROM Categories; */
+SELECT CustomerName, /*City,*/ Country FROM Customers
+-- Dejamos solo Clientes, eliminamos el campo City
+```
+
+## Comando SELECT
+
+El comando `SELECT` es la base de todas las consultas SQL. Sirve para **extraer datos** de una o más tablas.
+
+### Seleccionar todos los campos
+
+```sql
+SELECT * FROM Shippers;
+```
+
+El `*` significa "todos los campos" de la tabla `Shippers`.
+
+### Seleccionar campos específicos
+
+```sql
+SELECT EmployeeID, LastName, FirstName FROM Employees;
+```
+
+Solo trae las columnas indicadas.
+
+## Filtrado con WHERE
+
+La cláusula `WHERE` permite filtrar registros según una condición.
+
+```sql
+SELECT EmployeeID, LastName, FirstName
+FROM Employees
+WHERE LastName = 'Davolio';
+```
+
+Trae solo el registro que tiene `LastName` igual a `'Davolio'`.
+
+### Operadores de comparación
+
+| Operador | Significado |
+|----------|-------------|
+| `=` | Igual |
+| `>` | Mayor que |
+| `<` | Menor que |
+| `>=` | Mayor o igual |
+| `<=` | Menor o igual |
+| `<>` | Distinto |
+
+```sql
+SELECT * FROM Products WHERE Price > 100;
+```
+
+## Condiciones compuestas
+
+### AND — Ambas condiciones deben cumplirse
+
+```sql
+SELECT * FROM Products
+WHERE Price > 100 AND SupplierID = 12;
+```
+
+### OR — Al menos una condición debe cumplirse
+
+```sql
+SELECT * FROM Products
+WHERE Price > 50 AND (CategoryID = 8 OR CategoryID = 5);
+```
+
+<Warning>
+Usá paréntesis cuando combinés `AND` y `OR` para asegurar el orden de evaluación correcto.
+</Warning>
+
+### NOT — Niega la condición
+
+```sql
+SELECT * FROM Products
+WHERE NOT CategoryID = 8;
+```
+
+## LIMIT — Limitar resultados
+
+Obtiene solo los primeros N registros de una consulta.
+
+```sql
+SELECT * FROM Customers
+WHERE Country = 'USA'
+LIMIT 5;
+```
+
+<Note>
+En algunas bases de datos se usa `TOP` en vez de `LIMIT` (por ejemplo, SQL Server). La funcionalidad es la misma.
+</Note>
+
+## DISTINCT — Eliminar duplicados
+
+Elimina valores duplicados en los resultados.
+
+```sql
+SELECT DISTINCT(Country) FROM Customers;
+```
+
+Trae cada país una sola vez, sin repeticiones.
+
+## COUNT — Contar resultados
+
+Cuenta la cantidad de filas que cumplen una condición.
+
+```sql
+-- Contar países únicos
+SELECT COUNT(DISTINCT(Country)) FROM Customers;
+
+-- Contar clientes del UK
+SELECT COUNT(CustomerID) FROM Customers
+WHERE Country = 'UK';
+```
+
+<Tip>
+`COUNT(*)` cuenta todas las filas, `COUNT(campo)` cuenta solo las filas donde ese campo no es NULL.
+</Tip>

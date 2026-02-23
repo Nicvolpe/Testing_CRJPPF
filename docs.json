@@ -1,0 +1,141 @@
+{
+    "$schema": "https://mintlify.com/docs.json",
+    "theme": "mint",
+    "name": "Curso SQL",
+    "description": "Curso completo de SQL desde cero — Bases de datos relacionales, consultas, JOINs y más",
+    "colors": {
+        "primary": "#7C3AED",
+        "light": "#A78BFA",
+        "dark": "#7C3AED"
+    },
+    "favicon": "/logo/light.svg",
+    "logo": {
+        "light": "/logo/light.svg",
+        "dark": "/logo/dark.svg"
+    },
+    "seo": {
+        "metatags": {
+            "robots": "noindex, nofollow"
+        }
+    },
+    "contextual": {
+        "options": ["copy", "view", "claude", "chatgpt", "mcp", "vscode"]
+    },
+    "navigation": {
+        "tabs": [
+            {
+                "tab": "Documentación",
+                "global": {
+                    "anchors": [
+                        {
+                            "anchor": "Inicio",
+                            "href": "/introduction",
+                            "icon": "house"
+                        }
+                    ]
+                },
+                "dropdowns": [
+                    {
+                        "dropdown": "Módulo 1 — Fundamentos",
+                        "icon": "database",
+                        "groups": [
+                            {
+                                "group": "Conceptos",
+                                "pages": [
+                                    "app/documentacion/modulo-1/conceptos-basicos",
+                                    "app/documentacion/modulo-1/relaciones-er",
+                                    "app/documentacion/modulo-1/dbms-intro-sql"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "dropdown": "Módulo 2 — SQL Básico",
+                        "icon": "code",
+                        "groups": [
+                            {
+                                "group": "Consultas",
+                                "pages": [
+                                    "app/documentacion/modulo-2/select-filtrado",
+                                    "app/documentacion/modulo-2/tipos-datos"
+                                ]
+                            },
+                            {
+                                "group": "Definición y manipulación",
+                                "pages": [
+                                    "app/documentacion/modulo-2/ddl",
+                                    "app/documentacion/modulo-2/dml",
+                                    "app/documentacion/modulo-2/indices-vistas-sp"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "dropdown": "Módulo 3 — Consultas Intermedias",
+                        "icon": "layer-group",
+                        "groups": [
+                            {
+                                "group": "Filtrado y agrupación",
+                                "pages": [
+                                    "app/documentacion/modulo-3/patrones-rangos",
+                                    "app/documentacion/modulo-3/ordenamiento-agrupacion"
+                                ]
+                            },
+                            {
+                                "group": "Funciones y subconsultas",
+                                "pages": [
+                                    "app/documentacion/modulo-3/funciones",
+                                    "app/documentacion/modulo-3/subconsultas"
+                                ]
+                            },
+                            {
+                                "group": "Práctica",
+                                "pages": [
+                                    "app/documentacion/modulo-3/examen"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "dropdown": "Módulo 4 — JOINs",
+                        "icon": "link",
+                        "groups": [
+                            {
+                                "group": "Combinación de tablas",
+                                "pages": [
+                                    "app/documentacion/modulo-4/tipos-join",
+                                    "app/documentacion/modulo-4/join-multitabla-union"
+                                ]
+                            },
+                            {
+                                "group": "Práctica",
+                                "pages": [
+                                    "app/documentacion/modulo-4/examen"
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "dropdown": "Módulo 5 — SQL Avanzado",
+                        "icon": "graduation-cap",
+                        "groups": [
+                            {
+                                "group": "Temas avanzados",
+                                "pages": [
+                                    "app/documentacion/modulo-5/consultas-avanzadas",
+                                    "app/documentacion/modulo-5/seguridad-herramientas"
+                                ]
+                            },
+                            {
+                                "group": "Práctica",
+                                "pages": [
+                                    "app/documentacion/modulo-5/examen"
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

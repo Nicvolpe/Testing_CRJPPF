@@ -1,0 +1,126 @@
+---
+title: "Índices, Vistas y Procedimientos Almacenados"
+description: "Acelerar consultas con índices, guardar consultas frecuentes como vistas y crear procedimientos almacenados con parámetros"
+icon: "bolt"
+---
+
+## Índices
+
+Los índices se utilizan para **acelerar las consultas** más comunes. Funcionan como el índice de un libro: permiten encontrar datos rápidamente sin recorrer toda la tabla.
+
+### Ventajas y desventajas
+
+| | Detalle |
+|---|---------|
+| **Ventaja** | Aceleran las consultas con respecto a un campo o campos |
+| **Desventaja** | Ocupan espacio y ralentizan las actualizaciones de las tablas |
+
+<Note>
+En entornos reales, se suelen crear bases de datos **transaccionales** (donde se escriben datos) y bases de datos **de consulta** (con muchos índices, donde se leen datos de forma rápida). Los datos se copian de una a otra periódicamente.
+</Note>
+
+### Crear un índice normal
+
+```sql
+CREATE INDEX index_name
+ON table_name (column1, column2, ...);
+```
+
+### Crear un índice único (sin duplicados)
+
+```sql
+CREATE UNIQUE INDEX index_name
+ON table_name (column1, column2, ...);
+```
+
+### Eliminar un índice
+
+```sql
+ALTER TABLE table_name
+DROP INDEX index_name;
+```
+
+<Warning>
+Los comandos exactos para crear y eliminar índices pueden variar según el motor de base de datos.
+</Warning>
+
+## Vistas
+
+Las vistas son **consultas almacenadas en el servidor**. Son como "tablas virtuales" que ejecutan una consulta internamente cada vez que se acceden.
+
+### Por qué usar vistas
+
+- Se crean para consultas que se utilizan **con frecuencia**
+- Evitan escribir la misma consulta repetidamente
+- Pueden combinar campos de **varias tablas**
+- Simplifican consultas complejas
+
+### Crear una vista
+
+```sql
+CREATE VIEW [Ordenes-grandes] AS
+SELECT * FROM OrderDetails
+WHERE Quantity >= 100;
+```
+
+### Usar una vista
+
+Una vez creada, se llama como si fuera una tabla:
+
+```sql
+SELECT * FROM [Ordenes-grandes];
+```
+
+### Eliminar una vista
+
+```sql
+DROP VIEW [Ordenes-grandes];
+```
+
+<Note>
+Las vistas no almacenan datos propios — ejecutan la consulta cada vez que se acceden. Si los datos de las tablas base cambian, la vista refleja los cambios automáticamente.
+</Note>
+
+## Procedimientos almacenados
+
+Son **conjuntos de instrucciones SQL** que se almacenan en el servidor y se les pueden pasar **parámetros**.
+
+### Crear un procedimiento almacenado
+
+```sql
+CREATE PROCEDURE SelectAllCustomers
+    @City NVARCHAR(30),
+    @PostalCode NVARCHAR(10)
+AS
+    SELECT * FROM Customers
+    WHERE City = @City AND PostalCode = @PostalCode
+GO;
+```
+
+### Ejecutar un procedimiento almacenado
+
+```sql
+EXEC SelectAllCustomers
+    @City = 'London',
+    @PostalCode = 'WA1 1DP';
+```
+
+<Warning>
+La sintaxis para crear y ejecutar procedimientos almacenados **varía según el motor** de base de datos (MySQL, SQL Server, PostgreSQL, etc.).
+</Warning>
+
+### Procedimientos y seguridad
+
+El uso de **parámetros** en procedimientos almacenados es una de las formas de prevenir **ataques por inyección SQL**, ya que los valores se pasan de forma controlada en lugar de concatenarse directamente en la consulta.
+
+<Tip>
+Para más información sobre inyección SQL y cómo prevenirla, consultá [Seguridad y Herramientas](/app/documentacion/modulo-5/seguridad-herramientas).
+</Tip>
+
+## Resumen comparativo
+
+| Objeto | Qué es | Cuándo usar |
+|--------|--------|-------------|
+| **Índice** | Estructura de aceleración de búsqueda | Consultas frecuentes sobre un campo |
+| **Vista** | Consulta guardada como "tabla virtual" | Consultas complejas que se repiten |
+| **Procedimiento** | Bloque de código SQL con parámetros | Operaciones complejas reutilizables |

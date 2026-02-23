@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(realpath:*)",
+      "Bash(du:*)",
+      "Bash(python3:*)",
+      "Bash(pip3 install:*)",
+      "Bash(/c/Python313/python:*)",
+      "Bash(/c/Python313/python -m pip install:*)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(npx --version)",
+      "Bash(curl:*)"
+    ]
+  }
+}

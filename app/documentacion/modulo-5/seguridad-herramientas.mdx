@@ -1,0 +1,106 @@
+---
+title: "Inyección SQL y Herramientas"
+description: "Ataques de inyección SQL, cómo prevenirlos y herramientas cliente para gestionar bases de datos"
+icon: "shield-halved"
+---
+
+## Ataques de inyección SQL
+
+La inyección SQL es una de las **técnicas de hacking más utilizadas**. Consiste en explotar formularios web que interactúan con una base de datos para insertar código SQL malicioso.
+
+### Cómo funciona
+
+<Steps>
+  <Step title="Uso normal">
+    El usuario ingresa un valor legítimo en un formulario.
+
+```sql
+SELECT * FROM usuarios WHERE nombre = 'Pepe';
+```
+  </Step>
+  <Step title="Entrada maliciosa">
+    El atacante ingresa código SQL en lugar de un valor normal.
+
+    Entrada: `' OR '' = '`
+  </Step>
+  <Step title="Consulta generada">
+    La consulta se modifica para devolver todos los datos.
+
+```sql
+SELECT * FROM usuarios WHERE nombre = '' OR '' = '';
+```
+
+    La condición `'' = ''` **siempre es verdadera**, por lo que se devuelven todos los registros.
+  </Step>
+</Steps>
+
+### Variante con 1=1
+
+```sql
+-- El atacante ingresa: Pepe' OR 1=1 --
+SELECT * FROM usuarios WHERE nombre = 'Pepe' OR 1=1 --';
+```
+
+`1=1` siempre es verdadero, y `--` comenta el resto de la consulta.
+
+<Warning>
+Un ataque de inyección SQL puede **exponer todos los datos** de la base de datos, e incluso **borrar tablas completas** si la aplicación tiene permisos de escritura.
+</Warning>
+
+### Cómo prevenir la inyección SQL
+
+| Método | Descripción |
+|--------|-------------|
+| **Validar entradas** | Asegurar que los campos de formulario no contengan caracteres peligrosos (`'`, `"`, `;`, `--`) |
+| **Parámetros SQL** | Usar consultas parametrizadas donde los valores se pasan de forma controlada |
+| **Encriptar datos sensibles** | Guardar campos sensibles encriptados y usar hashes para contraseñas |
+
+<Note>
+Los procedimientos almacenados con parámetros (vistos en el [Módulo 2](/app/documentacion/modulo-2/indices-vistas-sp)) son una forma efectiva de prevenir inyección SQL, ya que los valores se pasan de forma controlada.
+</Note>
+
+## Herramientas cliente para bases de datos
+
+### HeidiSQL
+
+| Característica | Detalle |
+|----------------|---------|
+| **Bases soportadas** | MariaDB, MySQL, MS SQL, PostgreSQL, SQLite |
+| **Licencia** | Gratis y Open Source |
+| **Tipo** | Aplicación de escritorio |
+
+### phpMyAdmin
+
+| Característica | Detalle |
+|----------------|---------|
+| **Bases soportadas** | MariaDB, MySQL |
+| **Tipo** | Interfaz web |
+| **Uso común** | Administración de bases de datos en servidores web |
+
+### Oracle SQL Developer
+
+| Característica | Detalle |
+|----------------|---------|
+| **Bases soportadas** | Oracle Database |
+| **Tipo** | Aplicación de escritorio |
+
+## Conexión desde código
+
+### Librerías para PHP
+
+En PHP se utilizan librerías como `mysqli` o `PDO` para conectarse a bases de datos. Se pasan comandos para crear y verificar las conexiones.
+
+### Librerías para Python (DB-API)
+
+En Python se importan módulos específicos según el motor de base de datos y se generan consultas programáticamente. Los módulos más comunes:
+
+| Módulo | Base de datos |
+|--------|---------------|
+| `mysql-connector-python` | MySQL |
+| `psycopg2` | PostgreSQL |
+| `sqlite3` | SQLite (incluido en Python) |
+| `pyodbc` | SQL Server |
+
+<Tip>
+Independientemente del lenguaje de programación, **siempre usá consultas parametrizadas** para prevenir inyección SQL al interactuar con bases de datos desde código.
+</Tip>

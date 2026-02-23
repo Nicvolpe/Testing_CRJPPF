@@ -1,0 +1,136 @@
+---
+title: "CREATE, ALTER y DROP"
+description: "Comandos DDL para crear tablas con restricciones, modificar la estructura y eliminar tablas o bases de datos"
+icon: "hammer"
+---
+
+## DDL — Data Definition Language
+
+Los comandos DDL se usan para **definir la estructura** de la base de datos.
+
+| Comando | Función |
+|---------|---------|
+| `CREATE` | Crear tablas o bases de datos |
+| `ALTER` | Modificar la estructura (agregar/quitar campos, cambiar tipos) |
+| `DROP` | Eliminar tablas o bases de datos completamente |
+
+## CREATE TABLE
+
+Crea una nueva tabla definiendo sus columnas, tipos de datos y restricciones.
+
+### Sintaxis básica
+
+```sql
+CREATE TABLE nombre_tabla (
+    columna1 tipo_dato parámetros_opcionales,
+    columna2 tipo_dato,
+    columna3 tipo_dato,
+    ...
+);
+```
+
+### Ejemplo simple
+
+```sql
+CREATE TABLE Countries (
+    CountryID CHAR(2) PRIMARY KEY NOT NULL,
+    Name VARCHAR(32)
+);
+```
+
+### Ejemplo con múltiples restricciones
+
+```sql
+CREATE TABLE SalesObjectives (
+    objectiveid INT PRIMARY KEY,
+    employeeID INT NOT NULL UNIQUE,
+    sales INT NOT NULL,
+    year INT NOT NULL
+);
+```
+
+<Note>
+El campo `employeeID` tiene dos restricciones: `NOT NULL` (no puede ser nulo) y `UNIQUE` (no puede repetirse).
+</Note>
+
+## Restricciones (Constraints)
+
+Las restricciones se utilizan para **evitar inconsistencias** en la base de datos.
+
+| Restricción | Función |
+|-------------|---------|
+| `NOT NULL` | El campo no puede quedar vacío |
+| `UNIQUE` | El valor no puede repetirse en la tabla |
+| `PRIMARY KEY` | Identificador único del registro (combina NOT NULL + UNIQUE) |
+| `FOREIGN KEY` | Referencia a la PK de otra tabla |
+| `DEFAULT` | Valor por defecto si no se especifica |
+| `CHECK` | Validación personalizada del valor |
+| `AUTO_INCREMENT` | Incremento automático del valor |
+
+### Ejemplo completo con todas las restricciones
+
+```sql
+CREATE TABLE SalesObjectives (
+    objectiveid INT,
+    employeeID INT,
+    sales INT NOT NULL DEFAULT(100000),
+    year INT NOT NULL,
+    CHECK(sales >= 50000),
+    PRIMARY KEY (objectiveid),
+    FOREIGN KEY (employeeID) REFERENCES Employees(EmployeeID)
+);
+```
+
+En este ejemplo:
+- `sales` tiene un valor por defecto de 100000 y no puede ser nulo
+- `CHECK` asegura que las ventas sean al menos 50000
+- `objectiveid` es la clave primaria
+- `employeeID` referencia a la tabla `Employees`
+
+## ALTER TABLE
+
+Modifica la estructura de una tabla existente.
+
+### Agregar una columna
+
+```sql
+ALTER TABLE nombre_tabla
+ADD columna_nombre tipo_dato;
+```
+
+### Eliminar una restricción
+
+```sql
+ALTER TABLE SalesObjectives
+DROP PRIMARY KEY;
+```
+
+## DROP — Eliminar
+
+### Eliminar una tabla
+
+```sql
+DROP TABLE Countries;
+```
+
+### Eliminar una base de datos
+
+```sql
+DROP DATABASE nombre_base;
+```
+
+<Warning>
+`DROP` es **irreversible**. Elimina completamente la tabla o base de datos con todos sus datos. Siempre hacé un backup antes de usar este comando.
+</Warning>
+
+## BACKUP DATABASE
+
+Crea una copia de seguridad de la base de datos.
+
+```sql
+BACKUP DATABASE nombre_base TO DISK = 'ruta/archivo';
+```
+
+<Tip>
+Para ver cómo agregar datos a las tablas creadas, continuá con [INSERT, UPDATE y DELETE](/app/documentacion/modulo-2/dml).
+</Tip>

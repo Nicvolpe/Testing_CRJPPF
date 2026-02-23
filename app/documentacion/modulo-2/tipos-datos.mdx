@@ -1,0 +1,77 @@
+---
+title: "Tipos de Datos y Caracteres"
+description: "Tipos de datos principales en SQL, juegos de caracteres y collations para el correcto manejo de texto"
+icon: "font"
+---
+
+## Tipos de datos principales
+
+| Categoría | Ejemplos |
+|-----------|----------|
+| **Números** | Enteros, decimales |
+| **Texto (string)** | Cadenas de caracteres |
+| **Fecha y hora** | Fechas, timestamps |
+| **Binarios** | Datos no estructurados (imágenes, videos) |
+| **Otros** | JSON, Espaciales, XML, ROWID |
+
+## Tipos de datos más utilizados
+
+| Tipo | Descripción | Ejemplo |
+|------|-------------|---------|
+| `INT(n)` | Número entero | `42`, `-7` |
+| `FLOAT(n)` / `DOUBLE` | Número con decimales | `3.14`, `99.99` |
+| `CHAR(n)` | Texto de longitud fija | `'AR'` (2 caracteres siempre) |
+| `VARCHAR(n)` | Texto de longitud variable (hasta n) | `'Nicolás'` (hasta n caracteres) |
+| `TEXT` | Textos más grandes | Descripciones largas |
+| `DATE` | Solo fecha | `'2024-01-15'` |
+| `TIME` | Solo hora | `'14:30:00'` |
+| `DATETIME` | Fecha y hora combinadas | `'2024-01-15 14:30:00'` |
+| `BLOB` | Binario (imágenes, videos) | Archivos multimedia |
+
+<Note>
+`CHAR(n)` siempre ocupa n caracteres (rellena con espacios). `VARCHAR(n)` ocupa solo lo necesario hasta un máximo de n. Usá `VARCHAR` cuando la longitud varíe.
+</Note>
+
+<Warning>
+Los formatos de fecha pueden ser distintos según el motor de base de datos. Siempre verificá el formato esperado antes de insertar datos de tipo fecha.
+</Warning>
+
+### BLOB — Datos binarios
+
+Para imágenes, videos y archivos, en muchos casos se almacena solo un **índice** (referencia) en la base de datos y los archivos reales se guardan en un disco aparte.
+
+## Juego de caracteres y collations
+
+Las letras y símbolos del texto se guardan internamente como **números**. El sistema que mapea símbolos a números se llama **juego de caracteres** (charset).
+
+### ASCII
+
+La codificación más sencilla. Cubre:
+- Letras minúsculas y mayúsculas (inglés)
+- Números
+- Algunos símbolos
+
+Usa **7 bits** (cabe en 1 byte), pero **solo soporta inglés**.
+
+### Unicode y otros juegos de caracteres
+
+Para representar símbolos de otros idiomas (ñ, á, ü, etc.) hacen falta **más bytes** y existen distintas tablas de conversión.
+
+| Concepto | Definición |
+|----------|-----------|
+| **Juego de caracteres (charset)** | Tabla que define qué número representa cada símbolo |
+| **Collation** | Reglas de **comparación** de cadenas (ej: ¿`á` es igual a `a`?) |
+
+### Configuración en el DBMS
+
+A los gestores de bases de datos se les puede configurar para:
+- **Guardar** las cadenas de texto en un juego de caracteres determinado
+- **Trabajar** con otro juego de caracteres local
+
+<Warning>
+Si el charset de almacenamiento y el de lectura no coinciden, pueden aparecer **símbolos corrompidos** al trabajar con texto que no sea en inglés (ej: `Ã±` en lugar de `ñ`).
+</Warning>
+
+<Tip>
+Antes de implementar una base de datos, cargá datos de prueba y verificá que se cargan y extraen correctamente. Si detectás problemas con caracteres especiales, consultá el manual del DBMS para configurar el charset y collation adecuados.
+</Tip>

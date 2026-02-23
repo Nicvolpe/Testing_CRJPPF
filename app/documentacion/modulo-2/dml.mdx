@@ -1,0 +1,110 @@
+---
+title: "INSERT, UPDATE y DELETE"
+description: "Comandos DML para insertar, modificar y eliminar registros en tablas, con detección de valores nulos"
+icon: "pen-to-square"
+---
+
+## DML — Data Manipulation Language
+
+Los comandos DML permiten **manipular los datos** dentro de las tablas.
+
+| Comando | Función |
+|---------|---------|
+| `INSERT` | Insertar uno o más registros |
+| `UPDATE` | Modificar uno o varios registros |
+| `DELETE` | Borrar uno o varios registros |
+
+## INSERT INTO
+
+Agrega nuevos registros a una tabla.
+
+### Insertar un registro
+
+```sql
+INSERT INTO SalesObjectives (objectiveid, employeeID, sales, year)
+VALUES (1, 1, 100, 2022);
+```
+
+### Insertar varios registros
+
+```sql
+INSERT INTO SalesObjectives (objectiveid, employeeID, sales, year)
+VALUES
+    (2, 2, 120000, 2022),
+    (3, 3, 95000, 2022);
+```
+
+<Note>
+Si la tabla tiene un campo con `AUTO_INCREMENT`, no es necesario incluirlo en el INSERT — se genera solo.
+</Note>
+
+## UPDATE
+
+Modifica los valores de registros existentes.
+
+```sql
+UPDATE SalesObjectives
+SET sales = 125000
+WHERE employeeID = 2;
+```
+
+<Warning>
+**Siempre incluí la cláusula `WHERE`** en un UPDATE. Sin ella, se modificarán **todas las filas** de la tabla.
+</Warning>
+
+### Ejemplo sin WHERE (peligroso)
+
+```sql
+-- Esto cambia TODAS las filas
+UPDATE SalesObjectives SET sales = 125000;
+```
+
+## DELETE
+
+Elimina registros de una tabla.
+
+```sql
+DELETE FROM SalesObjectives
+WHERE employeeID = 3;
+```
+
+<Warning>
+**Siempre incluí la cláusula `WHERE`** en un DELETE. Sin ella, se borrarán **todos los registros** de la tabla.
+</Warning>
+
+### Diferencia entre DELETE y DROP
+
+| Comando | Qué hace |
+|---------|----------|
+| `DELETE FROM tabla` | Borra los **datos** (la tabla sigue existiendo) |
+| `DROP TABLE tabla` | Borra la **tabla completa** (estructura + datos) |
+
+## Detección de valores NULL
+
+Los valores `NULL` representan datos **ausentes o desconocidos**. Se detectan con operadores especiales.
+
+### IS NULL — Buscar campos vacíos
+
+```sql
+SELECT * FROM Employees
+WHERE FirstName IS NULL;
+```
+
+Trae todos los empleados que **no tienen** nombre cargado.
+
+### IS NOT NULL — Buscar campos con datos
+
+```sql
+SELECT COUNT(EmployeeID) FROM Employees
+WHERE FirstName IS NOT NULL;
+```
+
+Cuenta cuántos empleados **sí tienen** nombre cargado.
+
+<Note>
+No se puede usar `= NULL` ni `<> NULL` para comparar. **Siempre** usá `IS NULL` o `IS NOT NULL`.
+</Note>
+
+<Tip>
+Para aprender sobre índices, vistas y procedimientos almacenados, continuá con [Índices, Vistas y Procedimientos](/app/documentacion/modulo-2/indices-vistas-sp).
+</Tip>

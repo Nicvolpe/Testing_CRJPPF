@@ -1,0 +1,190 @@
+---
+title: "Examen Módulo 5"
+description: "Ejercicios resueltos sobre consultas avanzadas multitabla con JOINs, GROUP BY, CASE y subconsultas complejas"
+icon: "clipboard-check"
+---
+
+## Ejercicios resueltos
+
+<Note>
+Estos ejercicios usan el emulador SQL de W3Schools. Algunos requieren el emulador con soporte para fechas.
+</Note>
+
+---
+
+### Ejercicio 1 — Total de ventas para 5 clientes
+
+**Consigna:** Calculá la suma total de ventas (Price × Quantity) de los siguientes 5 clientes: Comércio Mineiro, Consolidated Holdings, Die Wandernde Kuh, Drachenblut Delikatessend, Du monde entier.
+
+<Accordion title="Solución">
+
+```sql
+SELECT SUM(p.Price * od.Quantity) AS Total
+FROM Customers cu
+JOIN Orders o ON o.CustomerID = cu.CustomerID
+JOIN OrderDetails od ON od.OrderID = o.OrderID
+JOIN Products p ON p.ProductID = od.ProductID
+WHERE cu.CustomerName IN (
+    "Comércio Mineiro",
+    "Consolidated Holdings",
+    "Die Wandernde Kuh",
+    "Drachenblut Delikatessend",
+    "Du monde entier"
+);
+```
+
+**Respuesta: 9348.75**
+
+Se usa `IN` con comillas dobles por si algún nombre contiene comillas simples. La cadena de JOINs conecta Customers → Orders → OrderDetails → Products.
+
+</Accordion>
+
+---
+
+### Ejercicio 2 — Ventas por grupo de precios de un suministrador
+
+**Consigna:** Usando la clasificación de 10 grupos de precio del Módulo 3, obtené el total de ventas de cada grupo para el suministrador "Pavlova, Ltd." y encontrá el grupo con máximas ventas.
+
+<Accordion title="Solución">
+
+```sql
+SELECT g.GrupoPrecio,
+       COALESCE(SUM(x.VentaLinea), 0) AS TotalVentas
+FROM (
+    SELECT 'Grupo 1' AS GrupoPrecio
+    UNION ALL SELECT 'Grupo 2'
+    UNION ALL SELECT 'Grupo 3'
+    UNION ALL SELECT 'Grupo 4'
+    UNION ALL SELECT 'Grupo 5'
+    UNION ALL SELECT 'Grupo 6'
+    UNION ALL SELECT 'Grupo 7'
+    UNION ALL SELECT 'Grupo 8'
+    UNION ALL SELECT 'Grupo 9'
+    UNION ALL SELECT 'Grupo 10'
+) g
+LEFT JOIN (
+    SELECT
+        CASE
+            WHEN p.Price <= 10 THEN 'Grupo 1'
+            WHEN p.Price > 10  AND p.Price <= 20  THEN 'Grupo 2'
+            WHEN p.Price > 20  AND p.Price <= 30  THEN 'Grupo 3'
+            WHEN p.Price > 30  AND p.Price <= 40  THEN 'Grupo 4'
+            WHEN p.Price > 40  AND p.Price <= 50  THEN 'Grupo 5'
+            WHEN p.Price > 50  AND p.Price <= 60  THEN 'Grupo 6'
+            WHEN p.Price > 60  AND p.Price <= 70  THEN 'Grupo 7'
+            WHEN p.Price > 70  AND p.Price <= 100 THEN 'Grupo 8'
+            WHEN p.Price > 100 AND p.Price <= 200 THEN 'Grupo 9'
+            WHEN p.Price > 200 THEN 'Grupo 10'
+        END AS GrupoPrecio,
+        (p.Price * od.Quantity) AS VentaLinea
+    FROM Products p
+    JOIN Suppliers s ON s.SupplierID = p.SupplierID
+    JOIN OrderDetails od ON od.ProductID = p.ProductID
+    WHERE s.SupplierName = "Pavlova, Ltd."
+) x ON x.GrupoPrecio = g.GrupoPrecio
+GROUP BY g.GrupoPrecio
+ORDER BY TotalVentas DESC
+LIMIT 1;
+```
+
+**Respuesta: 12909**
+
+Técnica avanzada: se genera una tabla auxiliar con los 10 grupos usando `UNION ALL`, se hace `LEFT JOIN` con la subconsulta de ventas clasificadas por grupo, y `COALESCE` convierte NULL en 0 para los grupos sin ventas.
+
+</Accordion>
+
+---
+
+### Ejercicio 3 — Ventas por categoría para un empleado en un período
+
+**Consigna:** Calculá las ventas por categoría del comercial "Buchanan" en abril de 1998.
+
+<Accordion title="Solución">
+
+```sql
+SELECT ca.CategoryName,
+       SUM(p.Price * od.Quantity) AS TotalVentas
+FROM Orders o
+JOIN Employees e ON e.EmployeeID = o.EmployeeID
+JOIN OrderDetails od ON od.OrderID = o.OrderID
+JOIN Products p ON p.ProductID = od.ProductID
+JOIN Categories ca ON ca.CategoryID = p.CategoryID
+WHERE e.LastName = 'Buchanan'
+  AND o.OrderDate >= '1998-04-01'
+  AND o.OrderDate < '1998-05-01'
+GROUP BY ca.CategoryName
+ORDER BY TotalVentas DESC
+LIMIT 1;
+```
+
+**Respuesta: 210**
+
+Se filtran fechas por rango en lugar de usar `MONTH()` y `YEAR()` para mejor rendimiento. Cadena de 5 tablas: Orders → Employees, OrderDetails → Products → Categories.
+
+</Accordion>
+
+---
+
+### Ejercicio 4 — Ventas por transportista para un cliente en un año
+
+**Consigna:** Calculá las ventas por transportista del cliente "Franchi S.p.A." en 1998 y encontrá el de mayor monto.
+
+<Accordion title="Solución">
+
+```sql
+SELECT s.ShipperName,
+       SUM(p.Price * od.Quantity) AS TotalMaximo
+FROM Orders o
+JOIN Customers c ON c.CustomerID = o.CustomerID
+JOIN Shippers s ON s.ShipperID = o.ShipperID
+JOIN OrderDetails od ON od.OrderID = o.OrderID
+JOIN Products p ON p.ProductID = od.ProductID
+WHERE c.CustomerName = 'Franchi S.p.A.'
+  AND o.OrderDate >= '1998-01-01'
+  AND o.OrderDate < '1999-01-01'
+GROUP BY s.ShipperID
+ORDER BY TotalMaximo DESC
+LIMIT 1;
+```
+
+**Respuesta: 1030**
+
+5 tablas involucradas: Customers, Orders, Shippers, OrderDetails, Products.
+
+</Accordion>
+
+---
+
+### Ejercicio 5 — Mayor orden por ciudad
+
+**Consigna:** Encontrá el importe de la orden más grande emitida desde la ciudad "Bergamo".
+
+<Accordion title="Solución">
+
+```sql
+SELECT City, MAX(TotalOrden) AS MayorOrden
+FROM (
+    SELECT cu.City, o.OrderID,
+           SUM(p.Price * od.Quantity) AS TotalOrden
+    FROM Customers cu
+    JOIN Orders o ON o.CustomerID = cu.CustomerID
+    JOIN OrderDetails od ON od.OrderID = o.OrderID
+    JOIN Products p ON p.ProductID = od.ProductID
+    GROUP BY cu.City, o.OrderID
+) t
+WHERE City = 'Bergamo'
+GROUP BY City;
+```
+
+**Respuesta: 2096.90**
+
+<Steps>
+  <Step title="Subconsulta">
+    Calcula el total de cada orden agrupando por ciudad y OrderID
+  </Step>
+  <Step title="Consulta externa">
+    Filtra por ciudad y obtiene el máximo total de orden con `MAX()`
+  </Step>
+</Steps>
+
+</Accordion>

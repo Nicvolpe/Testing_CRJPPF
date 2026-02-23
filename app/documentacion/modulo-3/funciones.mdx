@@ -1,0 +1,156 @@
+---
+title: "Funciones SQL"
+description: "Funciones agregadas (SUM, MIN, MAX, AVG), numéricas (ROUND), de cadena (LENGTH, UPPER, LOWER) y de fecha y hora"
+icon: "square-root-variable"
+---
+
+## Tipos de funciones
+
+El uso de funciones **acelera las consultas** a realizar. Existen dos categorías principales:
+
+| Tipo | Descripción | Ejemplo |
+|------|-------------|---------|
+| **Agregadas** | Devuelven **un resultado** para todo el conjunto | `SUM()`, `COUNT()` |
+| **Escalares (por fila)** | Devuelven **un resultado por cada fila** | `ROUND()`, `UPPER()` |
+
+<Warning>
+Las funciones pueden ser **distintas según el motor** de base de datos. Siempre consultá la documentación del motor que estés usando.
+</Warning>
+
+## Funciones agregadas
+
+### SUM — Suma
+
+```sql
+SELECT SUM(Price) FROM Products;
+```
+
+### MIN, MAX, AVG — Mínimo, máximo y promedio
+
+```sql
+SELECT
+    MAX(Price) AS Max,
+    AVG(Price) AS Average,
+    MIN(Price) AS Min
+FROM Products;
+```
+
+## Funciones numéricas
+
+### ROUND — Redondeo
+
+```sql
+SELECT ProductName, ROUND(Price) FROM Products;
+```
+
+Redondea el precio al entero más cercano.
+
+## Funciones de cadena
+
+### LENGTH — Largo de texto
+
+```sql
+SELECT LENGTH(LastName) FROM Employees;
+```
+
+Devuelve el **número de caracteres** de cada apellido.
+
+### UPPER / UCASE — Convertir a mayúsculas
+
+```sql
+SELECT UPPER(LastName) FROM Employees;
+-- También funciona:
+SELECT UCASE(LastName) FROM Employees;
+```
+
+### LOWER — Convertir a minúsculas
+
+```sql
+SELECT LOWER(LastName) FROM Employees;
+```
+
+### Uso práctico en WHERE
+
+```sql
+SELECT * FROM Employees
+WHERE LOWER(LastName) = 'davolio';
+```
+
+<Tip>
+Usar `LOWER()` en el `WHERE` evita errores por diferencias de mayúsculas/minúsculas en los datos cargados. Si el dato está como "DAVOLIO" o "Davolio", la consulta lo encuentra igual.
+</Tip>
+
+### Combinar con DISTINCT y COUNT
+
+```sql
+SELECT COUNT(DISTINCT(LOWER(Country))) AS Countries
+FROM Customers;
+```
+
+Cuenta los países **distintos**, convirtiendo primero a minúsculas. Así, si hay un "Spain" y otro "spain", no los cuenta como países diferentes.
+
+## Funciones de fecha y hora
+
+### Funciones disponibles
+
+| Función | Extrae |
+|---------|--------|
+| `YEAR()` | Año |
+| `MONTH()` | Mes |
+| `DAY()` / `DAYOFMONTH()` | Día del mes |
+| `DAYOFWEEK()` | Día de la semana |
+| `DAYOFYEAR()` | Día del año |
+| `WEEK()` | Semana del año |
+| `HOUR()` | Hora |
+| `MINUTE()` | Minuto |
+| `SECOND()` | Segundo |
+
+### Ejemplos
+
+```sql
+-- Mes de cada orden
+SELECT MONTH(OrderDate) FROM Orders;
+
+-- Contar órdenes de mayo 1997
+SELECT COUNT(*) AS Order199705
+FROM Orders
+WHERE YEAR(OrderDate) = '1997'
+  AND MONTH(OrderDate) = '5';
+```
+
+### CAST — Convertir tipos
+
+`CAST` fuerza el formato de un campo a otro tipo de dato:
+
+```sql
+SELECT OrderDate, CAST(OrderDate + 15 AS DATE) AS DeliveryDate
+FROM Orders;
+```
+
+Suma 15 días a la fecha de orden y lo presenta como tipo `DATE`.
+
+### Fecha y hora actuales
+
+```sql
+-- Fecha actual
+SELECT CURRENT_DATE;    -- o SELECT CURDATE()
+
+-- Hora actual
+SELECT CURRENT_TIME;    -- o SELECT CURTIME()
+```
+
+### Aritmética de fechas
+
+```sql
+-- Diferencia desglosada (días, meses, años)
+SELECT OrderDate, (CURRENT_DATE - OrderDate)
+FROM Orders;
+
+-- Diferencia en días absolutos
+SELECT DATEDIFF(CURRENT_DATE, OrderDate)
+FROM Orders;
+```
+
+<Note>
+`DATEDIFF` devuelve la diferencia en **días absolutos**, mientras que la resta directa puede devolver un valor desglosado según el motor de base de datos.
+</Note>

@@ -1,0 +1,135 @@
+---
+title: "Examen Módulo 3"
+description: "Ejercicios resueltos sobre filtrado con LIKE, BETWEEN, IN, GROUP BY, COUNT y SELECT CASE"
+icon: "clipboard-check"
+---
+
+## Ejercicios resueltos
+
+<Note>
+Estos ejercicios se resuelven usando el emulador SQL de W3Schools. Las tablas disponibles son: Customers, Products, Suppliers, Orders, OrderDetails, Employees, Categories, Shippers.
+</Note>
+
+---
+
+### Ejercicio 1 — LIKE con comodines
+
+**Consigna:** Utilizá una consulta SELECT con cláusula WHERE y comodines para saber cuántos productos empiezan con la letra "E".
+
+<Accordion title="Solución">
+
+```sql
+SELECT * FROM Products
+WHERE ProductName LIKE 'E%';
+```
+
+**Respuesta: 2 productos**
+
+Se usa `LIKE 'E%'` donde `%` representa cualquier cantidad de caracteres después de "E".
+
+</Accordion>
+
+---
+
+### Ejercicio 2 — IN con Suppliers
+
+**Consigna:** Utilizá el operador IN para encontrar el número total de suministradores de España, Brasil y Suecia.
+
+<Accordion title="Solución">
+
+```sql
+SELECT *
+FROM Suppliers
+WHERE Country IN ('Spain', 'Brazil', 'Sweden');
+```
+
+**Respuesta: 4 suministradores**
+
+El operador `IN` permite filtrar por una lista de valores sin necesidad de múltiples `OR`.
+
+</Accordion>
+
+---
+
+### Ejercicio 3 — BETWEEN con ORDER BY
+
+**Consigna:** Encontrá el número de clientes cuyos nombres están entre "Blauer See Delikatessen" y "Lehmanns Marktstand" (alfabéticamente, incluyéndolos).
+
+<Accordion title="Solución">
+
+```sql
+SELECT CustomerName, CustomerID
+FROM Customers
+WHERE CustomerName BETWEEN 'Blauer See Delikatessen' AND 'Lehmanns Marktstand'
+ORDER BY CustomerID ASC;
+```
+
+**Respuesta: 34 registros**
+
+`BETWEEN` con texto funciona por orden alfabético e incluye ambos extremos.
+
+</Accordion>
+
+---
+
+### Ejercicio 4 — COUNT con GROUP BY
+
+**Consigna:** Entre los OrderID 10308 y 10431, encontrá cuál tiene mayor número de líneas de orden.
+
+<Accordion title="Solución">
+
+```sql
+SELECT OrderID, COUNT(*) AS LineasOrden
+FROM OrderDetails
+WHERE OrderID IN (10308, 10431)
+GROUP BY OrderID
+ORDER BY LineasOrden DESC;
+```
+
+**Respuesta: 10308** (tiene más líneas de orden)
+
+Se usa `COUNT(*)` con `GROUP BY` para contar las líneas por cada OrderID.
+
+</Accordion>
+
+---
+
+### Ejercicio 5 — SELECT CASE con 10 grupos
+
+**Consigna:** Clasificá los productos en 10 grupos de precio y encontrá cuántos hay en el Grupo 8 (precio entre 70 y 100).
+
+<Accordion title="Solución">
+
+```sql
+SELECT *,
+CASE
+    WHEN Price <= 10 THEN 'Grupo 1'
+    WHEN Price > 10 AND Price <= 20 THEN 'Grupo 2'
+    WHEN Price > 20 AND Price <= 30 THEN 'Grupo 3'
+    WHEN Price > 30 AND Price <= 40 THEN 'Grupo 4'
+    WHEN Price > 40 AND Price <= 50 THEN 'Grupo 5'
+    WHEN Price > 50 AND Price <= 60 THEN 'Grupo 6'
+    WHEN Price > 60 AND Price <= 70 THEN 'Grupo 7'
+    WHEN Price > 70 AND Price <= 100 THEN 'Grupo 8'
+    WHEN Price > 100 AND Price <= 200 THEN 'Grupo 9'
+    WHEN Price > 200 THEN 'Grupo 10'
+END AS GrupoPrecio
+FROM Products;
+```
+
+| Grupo | Rango de precio |
+|-------|----------------|
+| Grupo 1 | ≤ 10 |
+| Grupo 2 | 10 - 20 |
+| Grupo 3 | 20 - 30 |
+| Grupo 4 | 30 - 40 |
+| Grupo 5 | 40 - 50 |
+| Grupo 6 | 50 - 60 |
+| Grupo 7 | 60 - 70 |
+| Grupo 8 | 70 - 100 |
+| Grupo 9 | 100 - 200 |
+| Grupo 10 | > 200 |
+
+**Respuesta: Grupo 9 tiene 1 caso** (el producto con precio > 100 y ≤ 200)
+
+</Accordion>

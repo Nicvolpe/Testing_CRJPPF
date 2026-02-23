@@ -1,0 +1,125 @@
+---
+title: "JOINs Multitabla y UNION"
+description: "Combinar más de dos tablas con JOINs encadenados y concatenar resultados con UNION y UNION ALL"
+icon: "table-columns"
+---
+
+## JOIN de varias tablas
+
+Se pueden encadenar múltiples JOINs para combinar datos de **tres o más tablas** en una sola consulta.
+
+### Ejemplo: OrderDetails + Products + Categories
+
+```sql
+SELECT
+    O.OrderDetailID,
+    O.OrderID,
+    P.ProductName,
+    C.CategoryName,
+    O.Quantity,
+    P.Price,
+    O.Quantity * P.Price AS Total
+FROM OrderDetails O
+LEFT JOIN Products P ON P.ProductID = O.ProductID
+LEFT JOIN Categories C ON P.CategoryID = C.CategoryID;
+```
+
+```mermaid
+graph LR
+    OD["OrderDetails"] -->|ProductID| P["Products"]
+    P -->|CategoryID| C["Categories"]
+```
+
+Esta consulta combina:
+- **OrderDetails** → cantidad pedida
+- **Products** → nombre y precio del producto
+- **Categories** → nombre de la categoría
+
+Y calcula el **Total** (Quantity × Price) para cada línea.
+
+<Warning>
+Al usar JOINs de varias tablas, hay que tener cuidado con la **integridad de las tablas**. Si hay registros huérfanos (sin relación válida), el resultado puede tener valores NULL inesperados.
+</Warning>
+
+### Cuándo usar LEFT JOIN vs INNER JOIN
+
+| Escenario | JOIN recomendado |
+|-----------|-----------------|
+| Queremos **todos los productos** aunque no tengan categoría | `LEFT JOIN` desde Products hacia Categories |
+| Solo queremos productos **con categoría válida** | `INNER JOIN` |
+| Queremos **todas las categorías** aunque no tengan productos | `RIGHT JOIN` o `LEFT JOIN` invirtiendo el orden |
+
+## UNION — Concatenar resultados
+
+El comando `UNION` concatena los resultados de dos o más `SELECT` en una sola tabla de resultados.
+
+### Requisitos
+
+| Requisito | Detalle |
+|-----------|---------|
+| **Mismo número de campos** | Ambos SELECT deben tener la misma cantidad de columnas |
+| **Mismo orden** | Las columnas deben estar en el mismo orden |
+| **Tipos similares** | Los tipos de datos deben ser compatibles |
+| **Nombres de campos** | Se toman los del **primer** SELECT |
+| **Valores únicos** | Por defecto elimina duplicados |
+
+### UNION — Sin duplicados
+
+```sql
+SELECT City FROM Customers
+UNION
+SELECT City FROM Suppliers
+ORDER BY City;
+```
+
+Trae todas las ciudades donde hay clientes **o** suministradores, **sin repetir**.
+
+### UNION ALL — Con duplicados
+
+```sql
+SELECT City FROM Customers
+UNION ALL
+SELECT City FROM Suppliers
+ORDER BY City;
+```
+
+Si una ciudad aparece en ambas tablas, se muestra **dos veces**.
+
+### Ejemplo avanzado: UNION ALL con JOINs y filtros
+
+```sql
+SELECT O.OrderDetailID, O.OrderID, P.ProductName, C.CategoryName,
+       O.Quantity, P.Price, O.Quantity * P.Price AS Total
+FROM (OrderDetails O
+LEFT JOIN Products P ON O.ProductID = P.ProductID)
+LEFT JOIN Categories C ON P.CategoryID = C.CategoryID
+WHERE C.CategoryName = 'Dairy Products'
+  AND O.Quantity * P.Price > 175
+
+UNION ALL
+
+SELECT O.OrderDetailID, O.OrderID, P.ProductName, C.CategoryName,
+       O.Quantity, P.Price, O.Quantity * P.Price AS Total
+FROM (OrderDetails O
+LEFT JOIN Products P ON O.ProductID = P.ProductID)
+LEFT JOIN Categories C ON P.CategoryID = C.CategoryID
+WHERE C.CategoryName = 'Produce'
+  AND O.Quantity * P.Price > 200
+ORDER BY O.OrderDetailID;
+```
+
+Combina dos conjuntos de resultados:
+1. Productos lácteos con total > 175
+2. Productos agrícolas con total > 200
+
+<Note>
+`UNION ALL` mantiene los duplicados. Usá `UNION` (sin ALL) si querés resultados únicos.
+</Note>
+
+## Resumen
+
+| Operación | Función | Duplicados |
+|-----------|---------|------------|
+| `JOIN` | Combina columnas de tablas relacionadas | N/A |
+| `UNION` | Concatena filas de dos SELECT | Elimina duplicados |
+| `UNION ALL` | Concatena filas de dos SELECT | Mantiene duplicados |
